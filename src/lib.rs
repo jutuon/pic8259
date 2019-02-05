@@ -119,16 +119,6 @@ impl <T: PortIO> PortIOAvailable<T> for PicAEOI<T> {
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { &mut self.0 }
 }
 
-impl <T: PortIO> PicAEOI<T> {
-    pub fn read_irr_mode(self) -> RegisterReadModeIRR<T, Self> {
-        RegisterReadModeIRR::new(self)
-    }
-
-    pub fn read_isr_mode(self) -> RegisterReadModeISR<T, Self> {
-        RegisterReadModeISR::new(self)
-    }
-}
-
 pub struct Pic<T: PortIO>(PortIOWrapper<T>);
 
 impl <T: PortIO> PortIOAvailable<T> for Pic<T> {
@@ -136,21 +126,22 @@ impl <T: PortIO> PortIOAvailable<T> for Pic<T> {
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { &mut self.0 }
 }
 
-impl <T: PortIO> Pic<T> {
-    pub fn send_end_of_interrupt(&mut self) {
-        const OCW2_NON_SPECIFIC_EOI: u8 = 0b0010_0000;
+const OCW2_NON_SPECIFIC_EOI: u8 = 0b0010_0000;
+
+/// Send end of interrupt command.
+pub trait SendEOI<T: PortIO>: PortIOAvailable<T> {
+    fn send_eoi_to_master(&mut self) {
         self.port_io_mut().write(T::MASTER_PIC_COMMAND_PORT, OCW2_NON_SPECIFIC_EOI);
+    }
+
+    fn send_eoi_to_slave(&mut self) {
         self.port_io_mut().write(T::SLAVE_PIC_COMMAND_PORT, OCW2_NON_SPECIFIC_EOI);
     }
-
-    pub fn read_irr_mode(self) -> RegisterReadModeIRR<T, Self> {
-        RegisterReadModeIRR::new(self)
-    }
-
-    pub fn read_isr_mode(self) -> RegisterReadModeISR<T, Self> {
-        RegisterReadModeISR::new(self)
-    }
 }
+
+impl <T: PortIO> SendEOI<T> for Pic<T> {}
+impl <T: PortIO> SendEOI<T> for RegisterReadModeIRR<T, Pic<T>> {}
+impl <T: PortIO> SendEOI<T> for RegisterReadModeISR<T, Pic<T>> {}
 
 /// Methods for changing interrupt masks.
 ///
@@ -209,14 +200,6 @@ impl <T: PortIO, U: PicMask<T>> RegisterReadModeIRR<T, U> {
         RegisterReadModeIRR(PhantomData, pic)
     }
 
-    pub fn pic(&self) -> &U {
-        &self.1
-    }
-
-    pub fn pic_mut(&mut self) -> &mut U {
-        &mut self.1
-    }
-
     pub fn exit(self) -> U {
         self.1
     }
@@ -240,14 +223,6 @@ impl <T: PortIO, U: PicMask<T>> RegisterReadModeISR<T, U> {
         RegisterReadModeISR(PhantomData, pic)
     }
 
-    pub fn pic(&self) -> &U {
-        &self.1
-    }
-
-    pub fn pic_mut(&mut self) -> &mut U {
-        &mut self.1
-    }
-
     pub fn exit(self) -> U {
         self.1
     }
@@ -265,3 +240,16 @@ pub unsafe trait LockedReadRegister<T: PortIO>: PortIOAvailable<T> {
         self.port_io().read(T::SLAVE_PIC_COMMAND_PORT)
     }
 }
+
+pub trait ChangeRegisterReadMode<T: PortIO>: Sized + PicMask<T> {
+    fn read_irr_mode(self) -> RegisterReadModeIRR<T, Self> {
+        RegisterReadModeIRR::new(self)
+    }
+
+    fn read_isr_mode(self) -> RegisterReadModeISR<T, Self> {
+        RegisterReadModeISR::new(self)
+    }
+}
+
+impl <T: PortIO> ChangeRegisterReadMode<T> for PicAEOI<T> {}
+impl <T: PortIO> ChangeRegisterReadMode<T> for Pic<T> {}
