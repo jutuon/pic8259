@@ -13,7 +13,34 @@
 //! # Example
 //!
 //! ```
-//! // TODO
+//! use pc_at_pic8259a::*;
+//!
+//! struct PicPortIO;
+//!
+//! impl PortIO for PicPortIO {
+//!     fn read(&self, port: u16) -> u8 {
+//!         unimplemented!() // unsafe { x86::io::inb(port) }
+//!     }
+//!
+//!     fn write(&mut self, port: u16, data: u8) {
+//!         // unsafe { x86::io::outb(port, data); }
+//!     }
+//! }
+//!
+//! const MASTER_PIC_INTERRUPT_OFFSET: u8 = 32;
+//! const SLAVE_PIC_INTERRUPT_OFFSET: u8 = MASTER_PIC_INTERRUPT_OFFSET + 8;
+//!
+//! fn main() {
+//!     let _pic = PicInit::send_icw1(PicPortIO, InterruptTriggerMode::EdgeTriggered)
+//!         .send_icw2_and_icw3(MASTER_PIC_INTERRUPT_OFFSET, SLAVE_PIC_INTERRUPT_OFFSET)
+//!         .send_icw4_aeoi();
+//!
+//!     // Setup Interrupt Descriptor Table...
+//!
+//!     // Enable interrupts.
+//!     // unsafe { x86::irq::enable(); }
+//! }
+//!
 //! ```
 //!
 //! # Hardware compatibility notes
@@ -111,7 +138,7 @@ pub trait PortIOAvailable<T: PortIO> {
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T>;
 }
 
-
+/// Automatic end of interrupt mode PIC.
 pub struct PicAEOI<T: PortIO>(PortIOWrapper<T>);
 
 impl <T: PortIO> PortIOAvailable<T> for PicAEOI<T> {
@@ -119,6 +146,7 @@ impl <T: PortIO> PortIOAvailable<T> for PicAEOI<T> {
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { &mut self.0 }
 }
 
+// Normal end of interrupt mode PIC.
 pub struct Pic<T: PortIO>(PortIOWrapper<T>);
 
 impl <T: PortIO> PortIOAvailable<T> for Pic<T> {
@@ -176,7 +204,9 @@ const OCW3_BASE_VALUE: u8 = 0b0000_1000;
 
 #[derive(Debug)]
 #[repr(u8)]
-/// Registers which can be read from PIC.
+/// Registers which can be read from the PIC.
+///
+/// This enum value is used as the third Operation Command Word (OCW).
 pub enum Register {
     InterruptRequest = OCW3_BASE_VALUE | 0b0000_0010,
     InService = OCW3_BASE_VALUE | 0b0000_0011,
@@ -184,6 +214,7 @@ pub enum Register {
 
 use core::marker::PhantomData;
 
+/// Read Interrupt Request Register (IRR).
 pub struct RegisterReadModeIRR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
 impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeIRR<T, U> {
@@ -207,6 +238,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U> {
     }
 }
 
+/// Read In Service Register (ISR).
 pub struct RegisterReadModeISR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
 impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeISR<T, U> {
@@ -243,6 +275,7 @@ pub unsafe trait LockedReadRegister<T: PortIO>: PortIOAvailable<T> {
     }
 }
 
+/// Change PIC register read mode.
 pub trait ChangeRegisterReadMode<T: PortIO>: Sized + PortIOAvailable<T> {
     fn read_irr_mode(self) -> RegisterReadModeIRR<T, Self> {
         RegisterReadModeIRR::new(self)
