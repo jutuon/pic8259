@@ -77,7 +77,7 @@ pub mod init;
 
 pub use init::{PicInit, InterruptTriggerMode};
 
-pub unsafe trait PortIO {
+pub trait PortIO {
     const MASTER_PIC_COMMAND_PORT: u16 = 0x20;
     const MASTER_PIC_DATA_PORT: u16 = 0x21;
 
