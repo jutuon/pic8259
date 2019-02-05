@@ -169,6 +169,8 @@ pub trait PicMask<T: PortIO>: PortIOAvailable<T> {
 
 impl <T: PortIO> PicMask<T> for PicAEOI<T> {}
 impl <T: PortIO> PicMask<T> for Pic<T> {}
+impl <T: PortIO, U: PortIOAvailable<T>> PicMask<T> for RegisterReadModeIRR<T, U> {}
+impl <T: PortIO, U: PortIOAvailable<T>> PicMask<T> for RegisterReadModeISR<T, U> {}
 
 const OCW3_BASE_VALUE: u8 = 0b0000_1000;
 
