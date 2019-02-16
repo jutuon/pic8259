@@ -10,7 +10,7 @@ pub struct PicAEOI<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> PicAEOI<T>);
 
-// Normal end of interrupt mode PIC.
+/// Normal end of interrupt mode PIC.
 #[derive(Debug)]
 pub struct Pic<T: PortIO>(T);
 
