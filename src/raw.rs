@@ -1,5 +1,5 @@
 //! Raw commands from the Intel reference.
-//! 
+//!
 //! PC/AT doesn't support all commands in this module.
 
 #[derive(Debug)]
@@ -9,7 +9,7 @@ impl ICW1Bits {
     pub const ICW4_NEEDED: u8 = 0b0000_0001 | Self::ICW1_IDENTIFIER_BIT;
     pub const SINGLE_MODE: u8 = 0b0000_0010 | Self::ICW1_IDENTIFIER_BIT;
     pub const CALL_ADDRESS_INTERVAL_4: u8 = 0b0000_0100 | Self::ICW1_IDENTIFIER_BIT;
-    pub const LEVEL_TRIGGERED_MODE: u8 =  0b0000_1000 | Self::ICW1_IDENTIFIER_BIT;
+    pub const LEVEL_TRIGGERED_MODE: u8 = 0b0000_1000 | Self::ICW1_IDENTIFIER_BIT;
     pub const ICW1_IDENTIFIER_BIT: u8 = 0b0001_0000;
 }
 

@@ -27,15 +27,23 @@ pub trait PortIOAvailable<T: PortIO> {
 
 macro_rules! impl_port_io_available {
     (<T: PortIO> $type:ty) => {
-        impl <T: PortIO> crate::io::PortIOAvailable<T> for $type {
-            fn port_io(&self) -> &T { &self.0 }
-            fn port_io_mut(&mut self) -> &mut T { &mut self.0 }
+        impl<T: PortIO> crate::io::PortIOAvailable<T> for $type {
+            fn port_io(&self) -> &T {
+                &self.0
+            }
+            fn port_io_mut(&mut self) -> &mut T {
+                &mut self.0
+            }
         }
     };
     (<T: PortIO, U: PortIOAvailable<T>> $type:ty) => {
-        impl <T: PortIO, U: PortIOAvailable<T>> crate::io::PortIOAvailable<T> for $type {
-            fn port_io(&self) -> &T { self.1.port_io() }
-            fn port_io_mut(&mut self) -> &mut T { self.1.port_io_mut() }
+        impl<T: PortIO, U: PortIOAvailable<T>> crate::io::PortIOAvailable<T> for $type {
+            fn port_io(&self) -> &T {
+                self.1.port_io()
+            }
+            fn port_io_mut(&mut self) -> &mut T {
+                self.1.port_io_mut()
+            }
         }
     };
 }

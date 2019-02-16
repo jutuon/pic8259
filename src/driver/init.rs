@@ -2,7 +2,7 @@
 //!
 //!
 
-use super::{PortIO, Pic, PicAEOI};
+use super::{Pic, PicAEOI, PortIO};
 
 use crate::raw::{ICW1Bits, ICW4Bits};
 
@@ -25,7 +25,7 @@ pub enum InterruptTriggerMode {
 /// PICs are initialized with four Initialization Command Words (ICW).
 pub struct PicInit<T: PortIO>(T);
 
-impl <T: PortIO> PicInit<T> {
+impl<T: PortIO> PicInit<T> {
     /// Send ICW1.
     pub fn send_icw1(mut port_io: T, mode: InterruptTriggerMode) -> ICW2AndICW3<T> {
         port_io.write(T::MASTER_PIC_COMMAND_PORT, mode as u8);
@@ -40,7 +40,7 @@ pub struct ICW2AndICW3<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> ICW2AndICW3<T>);
 
-impl <T: PortIO> ICW2AndICW3<T> {
+impl<T: PortIO> ICW2AndICW3<T> {
     /// Send ICW2 and ICW3.
     ///
     /// ICW2 sets interrupt number offset. ICW3 initializes cascade mode.
@@ -76,16 +76,15 @@ impl <T: PortIO> ICW2AndICW3<T> {
     }
 }
 
-
 pub struct ICW4<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> ICW4<T>);
 
-impl <T: PortIO> ICW4<T> {
+impl<T: PortIO> ICW4<T> {
     /// Send ICW4 which sets PICs to Automatic End Of Interrupt (AEOI) mode.
     ///
     /// Note that some PC hardware doesn't support AEOI mode.
-    /// 
+    ///
     /// This is the most efficient PIC mode, because you don't
     /// send end of interrupt message to PICs after every
     /// interrupt.
