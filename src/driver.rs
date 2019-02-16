@@ -7,18 +7,12 @@ use crate::raw::{OCW3ReadRegisterCommand, OCW2Commands};
 /// Automatic end of interrupt mode PIC.
 pub struct PicAEOI<T: PortIO>(T);
 
-impl <T: PortIO> PortIOAvailable<T> for PicAEOI<T> {
-    fn port_io(&self) -> &T { &self.0 }
-    fn port_io_mut(&mut self) -> &mut T { &mut self.0 }
-}
+impl_port_io_available!(<T: PortIO> PicAEOI<T>);
 
 // Normal end of interrupt mode PIC.
 pub struct Pic<T: PortIO>(T);
 
-impl <T: PortIO> PortIOAvailable<T> for Pic<T> {
-    fn port_io(&self) -> &T { &self.0 }
-    fn port_io_mut(&mut self) -> &mut T { &mut self.0 }
-}
+impl_port_io_available!(<T: PortIO> Pic<T>);
 
 /// Send end of interrupt command.
 pub trait SendEOI<T: PortIO>: PortIOAvailable<T> {
@@ -70,10 +64,7 @@ use core::marker::PhantomData;
 /// Read Interrupt Request Register (IRR).
 pub struct RegisterReadModeIRR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
-impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeIRR<T, U> {
-    fn port_io(&self) -> &T { self.1.port_io() }
-    fn port_io_mut(&mut self) -> &mut T { self.1.port_io_mut() }
-}
+impl_port_io_available!(<T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U>);
 
 impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeIRR<T, U> {
     const REGISTER: OCW3ReadRegisterCommand = OCW3ReadRegisterCommand::InterruptRequest;
@@ -94,10 +85,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U> {
 /// Read In Service Register (ISR).
 pub struct RegisterReadModeISR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
-impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeISR<T, U> {
-    fn port_io(&self) -> &T { self.1.port_io() }
-    fn port_io_mut(&mut self) -> &mut T { self.1.port_io_mut() }
-}
+impl_port_io_available!(<T: PortIO, U: PortIOAvailable<T>> RegisterReadModeISR<T, U>);
 
 impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeISR<T, U> {
     const REGISTER: OCW3ReadRegisterCommand = OCW3ReadRegisterCommand::InService;

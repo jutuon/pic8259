@@ -114,7 +114,7 @@
 #![forbid(unsafe_code)]
 
 pub mod raw;
-pub mod io;
+#[macro_use] pub mod io;
 pub mod driver;
 
 pub use driver::init::{PicInit, InterruptTriggerMode};

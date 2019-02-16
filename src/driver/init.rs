@@ -38,6 +38,8 @@ impl <T: PortIO> PicInit<T> {
 /// Send the second and third Initialization Command Word (ICW).
 pub struct ICW2AndICW3<T: PortIO>(T);
 
+impl_port_io_available!(<T: PortIO> ICW2AndICW3<T>);
+
 impl <T: PortIO> ICW2AndICW3<T> {
     /// Send ICW2 and ICW3.
     ///
@@ -76,6 +78,8 @@ impl <T: PortIO> ICW2AndICW3<T> {
 
 
 pub struct ICW4<T: PortIO>(T);
+
+impl_port_io_available!(<T: PortIO> ICW4<T>);
 
 impl <T: PortIO> ICW4<T> {
     /// Send ICW4 which sets PICs to Automatic End Of Interrupt (AEOI) mode.
