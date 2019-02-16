@@ -1,26 +1,38 @@
 //! Read and write the PIC registers.
 
+pub const MASTER_PIC_COMMAND_PORT_RAW: u16 = 0x20;
+pub const MASTER_PIC_DATA_PORT_RAW: u16 = 0x21;
+
+pub const SLAVE_PIC_COMMAND_PORT_RAW: u16 = 0xA0;
+pub const SLAVE_PIC_DATA_PORT_RAW: u16 = 0xA1;
+
 pub trait PortIO {
-    const MASTER_PIC_COMMAND_PORT: u16 = 0x20;
-    const MASTER_PIC_DATA_PORT: u16 = 0x21;
+    type PortID;
 
-    const SLAVE_PIC_COMMAND_PORT: u16 = 0xA0;
-    const SLAVE_PIC_DATA_PORT: u16 = 0xA1;
+    const MASTER_PIC_COMMAND_PORT: Self::PortID;
+    const MASTER_PIC_DATA_PORT: Self::PortID;
 
-    fn read(&self, port: u16) -> u8;
-    fn write(&mut self, port: u16, data: u8);
+    const SLAVE_PIC_COMMAND_PORT: Self::PortID;
+    const SLAVE_PIC_DATA_PORT: Self::PortID;
+
+    fn read(&self, port: Self::PortID) -> u8;
+    fn write(&mut self, port: Self::PortID, data: u8);
 }
 
 pub(crate) trait PrivatePortIO {
-    fn read(&self, port: u16) -> u8;
-    fn write(&mut self, port: u16, data: u8);
+    type PortID;
+
+    fn read(&self, port: Self::PortID) -> u8;
+    fn write(&mut self, port: Self::PortID, data: u8);
 }
 
 impl <T: PortIO> PrivatePortIO for PortIOWrapper<T> {
-    fn read(&self, port: u16) -> u8 {
+    type PortID = T::PortID;
+
+    fn read(&self, port: Self::PortID) -> u8 {
         self.0.read(port)
     }
-    fn write(&mut self, port: u16, data: u8) {
+    fn write(&mut self, port: Self::PortID, data: u8) {
         self.0.write(port, data)
     }
 }

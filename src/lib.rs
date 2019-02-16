@@ -16,14 +16,23 @@
 //! use pc_at_pic8259a::*;
 //!
 //! struct PicPortIO;
-//!
+//! struct PortID(u16);
+//! 
 //! impl PortIO for PicPortIO {
-//!     fn read(&self, port: u16) -> u8 {
-//!         unimplemented!() // unsafe { x86::io::inb(port) }
+//!     type PortID = PortID;
+//! 
+//!     const MASTER_PIC_COMMAND_PORT: Self::PortID = PortID(MASTER_PIC_COMMAND_PORT_RAW);
+//!     const MASTER_PIC_DATA_PORT: Self::PortID = PortID(MASTER_PIC_DATA_PORT_RAW);
+//! 
+//!     const SLAVE_PIC_COMMAND_PORT: Self::PortID = PortID(SLAVE_PIC_COMMAND_PORT_RAW);
+//!     const SLAVE_PIC_DATA_PORT: Self::PortID = PortID(SLAVE_PIC_DATA_PORT_RAW);  
+//! 
+//!     fn read(&self, port: Self::PortID) -> u8 {
+//!         unimplemented!() // unsafe { x86::io::inb(port.0) }
 //!     }
 //!
-//!     fn write(&mut self, port: u16, data: u8) {
-//!         // unsafe { x86::io::outb(port, data); }
+//!     fn write(&mut self, port: Self::PortID, data: u8) {
+//!         // unsafe { x86::io::outb(port.0, data); }
 //!     }
 //! }
 //!
@@ -108,4 +117,10 @@ pub mod io;
 pub mod driver;
 
 pub use driver::init::{PicInit, InterruptTriggerMode};
-pub use io::PortIO;
+pub use io::{
+    PortIO,
+    MASTER_PIC_COMMAND_PORT_RAW,
+    MASTER_PIC_DATA_PORT_RAW,
+    SLAVE_PIC_COMMAND_PORT_RAW,
+    SLAVE_PIC_DATA_PORT_RAW,
+};
