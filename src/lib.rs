@@ -165,8 +165,9 @@ pub trait SendEOI<T: PortIO>: PortIOAvailable<T> {
         self.port_io_mut().write(T::MASTER_PIC_COMMAND_PORT, OCW2Commands::NonSpecificEOI.bits());
     }
 
-    fn send_eoi_to_slave(&mut self) {
+    fn send_eoi_to_slave_and_master(&mut self) {
         self.port_io_mut().write(T::SLAVE_PIC_COMMAND_PORT, OCW2Commands::NonSpecificEOI.bits());
+        self.send_eoi_to_master();
     }
 }
 
