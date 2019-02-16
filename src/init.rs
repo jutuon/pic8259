@@ -80,7 +80,9 @@ pub struct ICW4<T: PortIO>(T);
 impl <T: PortIO> ICW4<T> {
     /// Send ICW4 which sets PICs to Automatic End Of Interrupt (AEOI) mode.
     ///
-    /// This is the recommended PIC mode, because you don't
+    /// Note that some PC hardware doesn't support AEOI mode.
+    /// 
+    /// This is the most efficient PIC mode, because you don't
     /// send end of interrupt message to PICs after every
     /// interrupt.
     pub fn send_icw4_aeoi(mut self) -> PicAEOI<T> {

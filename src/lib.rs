@@ -59,7 +59,8 @@
 //!
 //! When using old hardware you can add your own IO delay
 //! code to `PortIO` trait implementation which should solve
-//! the problem.
+//! the problem. Optionally read the source code of this library
+//! and add delay to where it is necessary.
 //!
 //! ## Automatic end of interrupt (AEOI)
 //!

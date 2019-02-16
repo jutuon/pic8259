@@ -1,3 +1,7 @@
+//! Raw commands from the Intel reference.
+//! 
+//! PC/AT doesn't support all commands in this module.
+
 #[derive(Debug)]
 pub struct ICW1Bits;
 
