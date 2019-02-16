@@ -101,8 +101,11 @@
 #![no_std]
 
 pub mod init;
+pub mod raw;
 
 pub use init::{PicInit, InterruptTriggerMode};
+
+use raw::{OCW3ReadRegisterCommand, OCW2Commands};
 
 pub trait PortIO {
     const MASTER_PIC_COMMAND_PORT: u16 = 0x20;
@@ -154,16 +157,14 @@ impl <T: PortIO> PortIOAvailable<T> for Pic<T> {
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { &mut self.0 }
 }
 
-const OCW2_NON_SPECIFIC_EOI: u8 = 0b0010_0000;
-
 /// Send end of interrupt command.
 pub trait SendEOI<T: PortIO>: PortIOAvailable<T> {
     fn send_eoi_to_master(&mut self) {
-        self.port_io_mut().write(T::MASTER_PIC_COMMAND_PORT, OCW2_NON_SPECIFIC_EOI);
+        self.port_io_mut().write(T::MASTER_PIC_COMMAND_PORT, OCW2Commands::NonSpecificEOI.bits());
     }
 
     fn send_eoi_to_slave(&mut self) {
-        self.port_io_mut().write(T::SLAVE_PIC_COMMAND_PORT, OCW2_NON_SPECIFIC_EOI);
+        self.port_io_mut().write(T::SLAVE_PIC_COMMAND_PORT, OCW2Commands::NonSpecificEOI.bits());
     }
 }
 
@@ -200,18 +201,6 @@ impl <T: PortIO> PicMask<T> for Pic<T> {}
 impl <T: PortIO, U: PortIOAvailable<T>> PicMask<T> for RegisterReadModeIRR<T, U> {}
 impl <T: PortIO, U: PortIOAvailable<T>> PicMask<T> for RegisterReadModeISR<T, U> {}
 
-const OCW3_BASE_VALUE: u8 = 0b0000_1000;
-
-#[derive(Debug)]
-#[repr(u8)]
-/// Registers which can be read from the PIC.
-///
-/// This enum value is used as the third Operation Command Word (OCW).
-pub enum Register {
-    InterruptRequest = OCW3_BASE_VALUE | 0b0000_0010,
-    InService = OCW3_BASE_VALUE | 0b0000_0011,
-}
-
 use core::marker::PhantomData;
 
 /// Read Interrupt Request Register (IRR).
@@ -223,7 +212,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeI
 }
 
 unsafe impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeIRR<T, U> {
-    const REGISTER: Register = Register::InterruptRequest;
+    const REGISTER: OCW3ReadRegisterCommand = OCW3ReadRegisterCommand::InterruptRequest;
 }
 
 impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U> {
@@ -247,7 +236,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeI
 }
 
 unsafe impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeISR<T, U> {
-    const REGISTER: Register = Register::InService;
+    const REGISTER: OCW3ReadRegisterCommand = OCW3ReadRegisterCommand::InService;
 }
 
 impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeISR<T, U> {
@@ -264,7 +253,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeISR<T, U> {
 
 /// Implementer of this trait must set correct register read state.
 pub unsafe trait LockedReadRegister<T: PortIO>: PortIOAvailable<T> {
-    const REGISTER: Register;
+    const REGISTER: OCW3ReadRegisterCommand;
 
     fn read_master(&self) -> u8 {
         self.port_io().read(T::MASTER_PIC_COMMAND_PORT)

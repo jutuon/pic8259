@@ -4,8 +4,7 @@
 
 use super::{PortIO, Pic, PicAEOI, PortIOWrapper};
 
-const PIC_INIT: u8 = 0b0001_0000;
-const ENABLE_ICW4: u8 = 0b0000_0001;
+use super::raw::{ICW1Bits, ICW4Bits};
 
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
@@ -13,12 +12,12 @@ const ENABLE_ICW4: u8 = 0b0000_0001;
 ///
 /// Also contains other ICW1 bitflags.
 pub enum InterruptTriggerMode {
-    EdgeTriggered = PIC_INIT | ENABLE_ICW4,
+    EdgeTriggered = ICW1Bits::ICW4_NEEDED,
     /// Level triggered mode is only used with IBM PS/2 computer.
     ///
     /// See section 7, page 1 (PDF page 262) from
     /// <http://classiccomputers.info/down/IBM_PS2/documents/PS2_Hardware_Interface_Technical_Reference_May88.pdf>
-    LevelTriggered = 0b0000_1000 | PIC_INIT | ENABLE_ICW4,
+    LevelTriggered = ICW1Bits::LEVEL_TRIGGERED_MODE | ICW1Bits::ICW4_NEEDED,
 }
 
 /// Start master and slave PIC initialization.
@@ -76,9 +75,6 @@ impl <T: PortIO> ICW2AndICW3<T> {
 }
 
 
-const ICW4_8068_MODE: u8 = 0b0000_0001;
-const ICW4_AUTOMATIC_END_OF_INTERRUPT: u8 = 0b0000_0010;
-
 pub struct ICW4<T: PortIO>(T);
 
 impl <T: PortIO> ICW4<T> {
@@ -88,7 +84,7 @@ impl <T: PortIO> ICW4<T> {
     /// send end of interrupt message to PICs after every
     /// interrupt.
     pub fn send_icw4_aeoi(mut self) -> PicAEOI<T> {
-        let icw4 = ICW4_8068_MODE | ICW4_AUTOMATIC_END_OF_INTERRUPT;
+        let icw4 = ICW4Bits::ENABLE_8068_MODE | ICW4Bits::AUTOMATIC_END_OF_INTERRUPT;
         self.0.write(T::MASTER_PIC_DATA_PORT, icw4);
         self.0.write(T::SLAVE_PIC_DATA_PORT, icw4);
 
@@ -100,7 +96,7 @@ impl <T: PortIO> ICW4<T> {
     /// In this mode you must send a end of interrupt
     /// message when receiving interrupt from PIC.
     pub fn send_icw4(mut self) -> Pic<T> {
-        let icw4 = ICW4_8068_MODE;
+        let icw4 = ICW4Bits::ENABLE_8068_MODE;
         self.0.write(T::MASTER_PIC_DATA_PORT, icw4);
         self.0.write(T::SLAVE_PIC_DATA_PORT, icw4);
 
