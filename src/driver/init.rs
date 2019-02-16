@@ -4,7 +4,7 @@
 
 use super::{PortIO, Pic, PicAEOI, PortIOWrapper};
 
-use super::raw::{ICW1Bits, ICW4Bits};
+use crate::raw::{ICW1Bits, ICW4Bits};
 
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
