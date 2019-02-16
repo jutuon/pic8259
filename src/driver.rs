@@ -75,7 +75,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeI
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { self.1.port_io_mut() }
 }
 
-unsafe impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeIRR<T, U> {
+impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeIRR<T, U> {
     const REGISTER: OCW3ReadRegisterCommand = OCW3ReadRegisterCommand::InterruptRequest;
 }
 
@@ -99,7 +99,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeI
     fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { self.1.port_io_mut() }
 }
 
-unsafe impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeISR<T, U> {
+impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeISR<T, U> {
     const REGISTER: OCW3ReadRegisterCommand = OCW3ReadRegisterCommand::InService;
 }
 
@@ -116,7 +116,7 @@ impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeISR<T, U> {
 }
 
 /// Implementer of this trait must set correct register read state.
-pub unsafe trait LockedReadRegister<T: PortIO>: PortIOAvailable<T> {
+pub trait LockedReadRegister<T: PortIO>: PortIOAvailable<T> {
     const REGISTER: OCW3ReadRegisterCommand;
 
     fn read_master(&self) -> u8 {
