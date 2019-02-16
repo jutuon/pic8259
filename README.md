@@ -9,6 +9,7 @@ computer. In the PC/AT there are two PICs, master and slave, running in cascade 
 use pc_at_pic8259a::*;
 
 struct PicPortIO;
+#[derive(Copy, Clone)]
 struct PortID(u16);
 
 impl PortIO for PicPortIO {
@@ -23,7 +24,7 @@ impl PortIO for PicPortIO {
     fn read(&self, port: Self::PortID) -> u8 {
         unimplemented!() // unsafe { x86::io::inb(port.0) }
     }
-    
+
     fn write(&mut self, port: Self::PortID, data: u8) {
         // unsafe { x86::io::outb(port.0, data); }
     }

@@ -7,7 +7,7 @@ pub const SLAVE_PIC_COMMAND_PORT_RAW: u16 = 0xA0;
 pub const SLAVE_PIC_DATA_PORT_RAW: u16 = 0xA1;
 
 pub trait PortIO {
-    type PortID;
+    type PortID: Copy;
 
     const MASTER_PIC_COMMAND_PORT: Self::PortID;
     const MASTER_PIC_DATA_PORT: Self::PortID;

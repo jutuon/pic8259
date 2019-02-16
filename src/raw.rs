@@ -86,7 +86,7 @@ impl OCW3Bits {
 #[derive(Debug, Copy, Clone)]
 #[repr(u8)]
 pub enum OCW3SpecialMaskMode {
-    NoAction = 0 | OCW3Bits::OCW3_IDENTIFIER_BIT,
+    NoAction = OCW3Bits::OCW3_IDENTIFIER_BIT,
     Reset = 0b0100_0000 | OCW3Bits::OCW3_IDENTIFIER_BIT,
     Set = 0b0110_0000 | OCW3Bits::OCW3_IDENTIFIER_BIT,
 }

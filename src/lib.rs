@@ -16,6 +16,7 @@
 //! use pc_at_pic8259a::*;
 //!
 //! struct PicPortIO;
+//! #[derive(Copy, Clone)]
 //! struct PortID(u16);
 //!
 //! impl PortIO for PicPortIO {
