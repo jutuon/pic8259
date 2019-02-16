@@ -111,6 +111,7 @@
 //! * <https://wiki.osdev.org/User:Johnburger/PIC/Background>
 
 #![no_std]
+#![forbid(unsafe_code)]
 
 pub mod raw;
 pub mod io;
