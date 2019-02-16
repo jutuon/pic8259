@@ -5,19 +5,19 @@ use crate::io::*;
 use crate::raw::{OCW3ReadRegisterCommand, OCW2Commands};
 
 /// Automatic end of interrupt mode PIC.
-pub struct PicAEOI<T: PortIO>(PortIOWrapper<T>);
+pub struct PicAEOI<T: PortIO>(T);
 
 impl <T: PortIO> PortIOAvailable<T> for PicAEOI<T> {
-    fn port_io(&self) -> &PortIOWrapper<T> { &self.0 }
-    fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { &mut self.0 }
+    fn port_io(&self) -> &T { &self.0 }
+    fn port_io_mut(&mut self) -> &mut T { &mut self.0 }
 }
 
 // Normal end of interrupt mode PIC.
-pub struct Pic<T: PortIO>(PortIOWrapper<T>);
+pub struct Pic<T: PortIO>(T);
 
 impl <T: PortIO> PortIOAvailable<T> for Pic<T> {
-    fn port_io(&self) -> &PortIOWrapper<T> { &self.0 }
-    fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { &mut self.0 }
+    fn port_io(&self) -> &T { &self.0 }
+    fn port_io_mut(&mut self) -> &mut T { &mut self.0 }
 }
 
 /// Send end of interrupt command.
@@ -71,8 +71,8 @@ use core::marker::PhantomData;
 pub struct RegisterReadModeIRR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
 impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeIRR<T, U> {
-    fn port_io(&self) -> &PortIOWrapper<T> { self.1.port_io() }
-    fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { self.1.port_io_mut() }
+    fn port_io(&self) -> &T { self.1.port_io() }
+    fn port_io_mut(&mut self) -> &mut T { self.1.port_io_mut() }
 }
 
 impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeIRR<T, U> {
@@ -95,8 +95,8 @@ impl <T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U> {
 pub struct RegisterReadModeISR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
 impl <T: PortIO, U: PortIOAvailable<T>> PortIOAvailable<T> for RegisterReadModeISR<T, U> {
-    fn port_io(&self) -> &PortIOWrapper<T> { self.1.port_io() }
-    fn port_io_mut(&mut self) -> &mut PortIOWrapper<T> { self.1.port_io_mut() }
+    fn port_io(&self) -> &T { self.1.port_io() }
+    fn port_io_mut(&mut self) -> &mut T { self.1.port_io_mut() }
 }
 
 impl <T: PortIO, U: PortIOAvailable<T>> LockedReadRegister<T> for RegisterReadModeISR<T, U> {

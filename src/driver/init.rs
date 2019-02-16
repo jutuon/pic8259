@@ -2,7 +2,7 @@
 //!
 //!
 
-use super::{PortIO, Pic, PicAEOI, PortIOWrapper};
+use super::{PortIO, Pic, PicAEOI};
 
 use crate::raw::{ICW1Bits, ICW4Bits};
 
@@ -90,7 +90,7 @@ impl <T: PortIO> ICW4<T> {
         self.0.write(T::MASTER_PIC_DATA_PORT, icw4);
         self.0.write(T::SLAVE_PIC_DATA_PORT, icw4);
 
-        PicAEOI(PortIOWrapper(self.0))
+        PicAEOI(self.0)
     }
 
     /// Send ICW4 which sets PICs to default End Of Interrupt (EOI) mode.
@@ -102,6 +102,6 @@ impl <T: PortIO> ICW4<T> {
         self.0.write(T::MASTER_PIC_DATA_PORT, icw4);
         self.0.write(T::SLAVE_PIC_DATA_PORT, icw4);
 
-        Pic(PortIOWrapper(self.0))
+        Pic(self.0)
     }
 }

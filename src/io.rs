@@ -19,29 +19,8 @@ pub trait PortIO {
     fn write(&mut self, port: Self::PortID, data: u8);
 }
 
-pub(crate) trait PrivatePortIO {
-    type PortID;
-
-    fn read(&self, port: Self::PortID) -> u8;
-    fn write(&mut self, port: Self::PortID, data: u8);
-}
-
-impl <T: PortIO> PrivatePortIO for PortIOWrapper<T> {
-    type PortID = T::PortID;
-
-    fn read(&self, port: Self::PortID) -> u8 {
-        self.0.read(port)
-    }
-    fn write(&mut self, port: Self::PortID, data: u8) {
-        self.0.write(port, data)
-    }
-}
-
-/// Wrapper for PortIO implementer type to disallow
-/// access to it after PIC initialization process is started.
-pub struct PortIOWrapper<T: PortIO>(pub(crate) T);
-
+/// You should only use this trait for debugging purposes.
 pub trait PortIOAvailable<T: PortIO> {
-    fn port_io(&self) -> &PortIOWrapper<T>;
-    fn port_io_mut(&mut self) -> &mut PortIOWrapper<T>;
+    fn port_io(&self) -> &T;
+    fn port_io_mut(&mut self) -> &mut T;
 }
