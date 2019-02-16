@@ -23,6 +23,7 @@ pub enum InterruptTriggerMode {
 /// Start master and slave PIC initialization.
 ///
 /// PICs are initialized with four Initialization Command Words (ICW).
+#[derive(Debug)]
 pub struct PicInit<T: PortIO>(T);
 
 impl<T: PortIO> PicInit<T> {
@@ -36,6 +37,7 @@ impl<T: PortIO> PicInit<T> {
 }
 
 /// Send the second and third Initialization Command Word (ICW).
+#[derive(Debug)]
 pub struct ICW2AndICW3<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> ICW2AndICW3<T>);
@@ -76,6 +78,7 @@ impl<T: PortIO> ICW2AndICW3<T> {
     }
 }
 
+#[derive(Debug)]
 pub struct ICW4<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> ICW4<T>);

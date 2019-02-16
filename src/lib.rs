@@ -112,7 +112,7 @@
 //! * <https://wiki.osdev.org/User:Johnburger/PIC/Background>
 
 #![no_std]
-#![forbid(unsafe_code)]
+#![forbid(unsafe_code, missing_debug_implementations)]
 
 pub mod raw;
 #[macro_use]

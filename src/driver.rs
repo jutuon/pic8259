@@ -5,11 +5,13 @@ use crate::io::*;
 use crate::raw::{OCW2Commands, OCW3ReadRegisterCommand};
 
 /// Automatic end of interrupt mode PIC.
+#[derive(Debug)]
 pub struct PicAEOI<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> PicAEOI<T>);
 
 // Normal end of interrupt mode PIC.
+#[derive(Debug)]
 pub struct Pic<T: PortIO>(T);
 
 impl_port_io_available!(<T: PortIO> Pic<T>);
@@ -68,6 +70,7 @@ impl<T: PortIO, U: PortIOAvailable<T>> PicMask<T> for RegisterReadModeISR<T, U> 
 use core::marker::PhantomData;
 
 /// Read Interrupt Request Register (IRR).
+#[derive(Debug)]
 pub struct RegisterReadModeIRR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
 impl_port_io_available!(<T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U>);
@@ -91,6 +94,7 @@ impl<T: PortIO, U: PortIOAvailable<T>> RegisterReadModeIRR<T, U> {
 }
 
 /// Read In Service Register (ISR).
+#[derive(Debug)]
 pub struct RegisterReadModeISR<T: PortIO, U: PortIOAvailable<T>>(PhantomData<T>, U);
 
 impl_port_io_available!(<T: PortIO, U: PortIOAvailable<T>> RegisterReadModeISR<T, U>);
