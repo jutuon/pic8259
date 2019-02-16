@@ -97,6 +97,8 @@
 //!     the data port.
 //! * <https://wiki.osdev.org/8259_PIC>
 //! * <https://en.wikipedia.org/wiki/Intel_8259>
+//! * <https://wiki.osdev.org/User:Johnburger/PIC>
+//! * <https://wiki.osdev.org/User:Johnburger/PIC/Background>
 
 #![no_std]
 
